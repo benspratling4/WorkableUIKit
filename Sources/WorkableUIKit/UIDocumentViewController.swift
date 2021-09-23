@@ -79,16 +79,20 @@ open class UIDocumentViewController<Document> : BannerViewController where Docum
 	
 	func updateSceneRestoration() {
 		updateDocumentUrlInTitleBar()
-		let activity:NSUserActivity = NSUserActivity(activityType: userActivityIdentifier)
-		updateStateRestorationActivityWithCurrentDocument(activity: activity)
+		updateStateRestorationWithCurrentDocumentActivity(documentUserActivity())
 	}
 	
-	func updateStateRestorationActivityWithCurrentDocument(activity:NSUserActivity) {
+	open func documentUserActivity()->NSUserActivity {
+		let activity:NSUserActivity = NSUserActivity(activityType: userActivityIdentifier)
 		activity.targetContentIdentifier = document.fileURL.absoluteString
 		activity.title = document.fileURL.lastPathComponent
 		activity.documentUrl = document.fileURL
 		activity.isEligibleForHandoff = true
 		activity.requiredUserInfoKeys = [activityDocumentUrlKey]
+		return activity
+	}
+	
+	open func updateStateRestorationWithCurrentDocumentActivity(_ activity:NSUserActivity) {
 		defer {
 			view.window?.windowScene?.userActivity = activity
 		}
