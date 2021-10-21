@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 
-open class UIDocumentViewController<Document> : BannerViewController where Document : UIDocument {
+open class UIDocumentViewController<Document> : BannerViewController where Document : ErrorRememberingDocument {
 	
 	public var document:Document
 	
@@ -64,6 +64,11 @@ open class UIDocumentViewController<Document> : BannerViewController where Docum
 		
 	}
 	
+	///override me
+	open func restoreFrom(_ activity:NSUserActivity?) {
+		
+	}
+	
 	
 	open override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
@@ -77,7 +82,8 @@ open class UIDocumentViewController<Document> : BannerViewController where Docum
 		}
 	}
 	
-	func updateSceneRestoration() {
+	///the app will re-crete the NSUserActivity and inform the system of the change
+	open func updateSceneRestoration() {
 		updateDocumentUrlInTitleBar()
 		updateStateRestorationWithCurrentDocumentActivity(documentUserActivity())
 	}

@@ -43,7 +43,7 @@ open class GenericDocumentBrowserViewController<DocumentController, Document> : 
 	
 	// MARK: Document Presentation
 	
-	open func presentDocument(at documentURL: URL, animated:Bool) {
+	open func presentDocument(at documentURL: URL, animated:Bool, restoringFrom:NSUserActivity?, completion:((Bool)->())?) {
 		let document = Document(fileURL: documentURL)
 		document.undoManager = view.window?.undoManager
 		let documentViewController = DocumentController(document:document
@@ -58,9 +58,36 @@ open class GenericDocumentBrowserViewController<DocumentController, Document> : 
 			if success {
 				documentViewController.modalPresentationStyle = .fullScreen
 				documentViewController.modalTransitionStyle = .crossDissolve
-				self.present(documentViewController, animated: false, completion: nil)
-			} else {
+				self.present(documentViewController, animated: false, completion: {
+					documentViewController.restoreFrom(restoringFrom)
+					completion?(true)
+				})
+			}
+			else if let error = document.error as? LocalizedError {
+				let bodyText =  [error.failureReason, error.recoverySuggestion]
+					.compactMap({ $0 })
+					.joined(separator: "  ")
+				let errorModal = UIAlertController(title: error.errorDescription, message: bodyText, preferredStyle: .alert)
+				if let recoverableError = error as? RecoverableError {
+					for (optionIndex, optionText) in recoverableError.recoveryOptions.enumerated() {
+						errorModal.addAction(.init(title: optionText, style: .default, handler: { [weak self] _ in
+							recoverableError.attemptRecovery(optionIndex: optionIndex) { recovered in
+								completion?(recovered)
+							}
+							self?.dismiss(animated: true, completion: nil)
+						}))
+					}
+				}
+				errorModal.addAction(.init(title: NSLocalizedString("Ok", comment: ""), style: .default, handler: { [weak self] _ in
+					self?.dismiss(animated: true, completion: {
+						completion?(false)
+				 })
+				}))
+				self.present(errorModal, animated: true, completion: nil)
 				
+			}
+			else {
+				completion?(false)
 			}
 		})
 	}
@@ -103,12 +130,12 @@ open class GenericDocumentBrowserViewController<DocumentController, Document> : 
 		
 		// Present the Document View Controller for the first document that was picked.
 		// If you support picking multiple items, make sure you handle them all.
-		presentDocument(at: sourceURL, animated:true)
+		presentDocument(at: sourceURL, animated:true, restoringFrom: nil, completion: nil)
 	}
 	
 	open func documentBrowser(_ controller: UIDocumentBrowserViewController, didImportDocumentAt sourceURL: URL, toDestinationURL destinationURL: URL) {
 		// Present the Document View Controller for the new newly created document
-		presentDocument(at: destinationURL, animated:true)
+		presentDocument(at: destinationURL, animated:true, restoringFrom: nil, completion: nil)
 	}
 	
 	open func documentBrowser(_ controller: UIDocumentBrowserViewController, failedToImportDocumentAt documentURL: URL, error: Error?) {
@@ -120,4 +147,32 @@ open class GenericDocumentBrowserViewController<DocumentController, Document> : 
 		
 	}
 	
+}
+
+
+
+open class ErrorRememberingDocument : UIDocument {
+	
+	public override required init(fileURL url: URL) {
+		self.error = nil
+		super.init(fileURL: url)
+	}
+	
+	//set after calls to open or save
+	public var error:Error? = nil
+	
+	open override func handleError(_ error: Error, userInteractionPermitted: Bool) {
+		self.error = error
+		super.handleError(error, userInteractionPermitted: userInteractionPermitted)
+	}
+
+	open override func save(to url: URL, for saveOperation: UIDocument.SaveOperation, completionHandler: ((Bool) -> Void)? = nil) {
+		self.error = nil
+		super.save(to: url, for: saveOperation, completionHandler: completionHandler)
+	}
+	
+	open override func open(completionHandler: ((Bool) -> Void)? = nil) {
+		self.error = nil
+		super.open(completionHandler: completionHandler)
+	}
 }
