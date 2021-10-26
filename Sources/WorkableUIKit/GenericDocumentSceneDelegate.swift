@@ -15,10 +15,10 @@ open class GenericDocumentSceneDelegate<DocumentController, Document> : UIRespon
 	
 	public var window: UIWindow?
 	
-	
 	//MARK: - UISceneDelegate
 	
 	open func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: 	UIScene.ConnectionOptions) {
+//		print("willConnectTo")
 		if let userActivity = connectionOptions.userActivities.first ?? session.stateRestorationActivity {
 			if !configure(window: window, with: userActivity, session: session) {
 //				print("Failed to restore from \(userActivity)")

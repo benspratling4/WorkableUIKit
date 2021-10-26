@@ -53,7 +53,7 @@ open class GenericDocumentBrowserViewController<DocumentController, Document> : 
 															}
 														})
 		documentViewController.modalPresentationStyle = .fullScreen
-		print("document.open(...")
+//		print("document.open(...")
 		document.open(completionHandler: { (success) in
 			if success {
 				documentViewController.modalPresentationStyle = .fullScreen
