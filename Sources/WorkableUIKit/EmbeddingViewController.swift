@@ -94,3 +94,28 @@ import UIKit
 	}
 	
 }
+
+
+extension UIViewController {
+	
+	public func dismissAllPresented(_ completion:@escaping()->()) {
+		guard let presented = self.presentedViewController else {
+			completion()
+			return
+		}
+		presented.dismissAllPresented {
+			presented.dismiss(animated: false) {
+				self.dismissAllPresented(completion)
+			}
+		}
+	}
+	
+	 public func ancestor<AncestorType>()->AncestorType? {
+		 if let foundType = self as? AncestorType {
+			 return foundType
+		 } else {
+			 return (parent ?? presentingViewController)?.ancestor()
+		 }
+	 }
+	
+}
