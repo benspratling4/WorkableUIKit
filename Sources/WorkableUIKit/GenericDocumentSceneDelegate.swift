@@ -15,10 +15,10 @@ open class GenericDocumentSceneDelegate<DocumentController, Document> : UIRespon
 	
 	public var window: UIWindow?
 	
-	
 	//MARK: - UISceneDelegate
 	
 	open func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: 	UIScene.ConnectionOptions) {
+//		print("willConnectTo")
 		if let userActivity = connectionOptions.userActivities.first ?? session.stateRestorationActivity {
 			if !configure(window: window, with: userActivity, session: session) {
 //				print("Failed to restore from \(userActivity)")
@@ -54,7 +54,7 @@ open class GenericDocumentSceneDelegate<DocumentController, Document> : UIRespon
 //				return	//apparently, this may be fine.
 			}
 			let docUrl = revealedDocumentURL ?? urlContext.url
-			docBrowser.presentDocument(at: docUrl, animated: false)
+			docBrowser.presentDocument(at: docUrl, animated: false, restoringFrom: nil, completion: nil)
 		}
 	}
 	
@@ -108,7 +108,7 @@ open class GenericDocumentSceneDelegate<DocumentController, Document> : UIRespon
 //				return	//it's ok for the doc browser to fail to reveal the doc, we can still try to open it
 			}
 			let docUrl = revealedDocumentURL ?? url
-			docBrowser.presentDocument(at: docUrl, animated:false)
+			docBrowser.presentDocument(at: docUrl, animated:false, restoringFrom: activity, completion: nil)
 		}
 		return true
 	}
@@ -123,7 +123,7 @@ open class GenericDocumentSceneDelegate<DocumentController, Document> : UIRespon
 	
 	open func closeDocIfPossible() {
 		if let showDocVC = window?.rootViewController?.presentedViewController as? DocumentController {
-			print(showDocVC.document.documentState.contains(.closed))
+//			print(showDocVC.document.documentState.contains(.closed))
 			showDocVC.document.close { (didClose) in
 				if self.docUrlNeedsStopAccessingSecurityScope {
 					showDocVC.document.fileURL.stopAccessingSecurityScopedResource()
