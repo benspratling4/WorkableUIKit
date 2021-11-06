@@ -253,3 +253,7 @@ extension UIView {
 		return affecting.filter({ attributes.contains($0.firstAttribute) || attributes.contains($0.secondAttribute) })
 	}
 }
+
+extension UILayoutPriority {
+	public static let allButRequired:UILayoutPriority = UILayoutPriority(rawValue:999.0)
+}

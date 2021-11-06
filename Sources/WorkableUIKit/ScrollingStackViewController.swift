@@ -17,7 +17,16 @@ open class ScrollingStackViewController : UIViewController {
 		super.viewDidLoad()
 		view.addSubview(scrollView)
 		|-scrollView-|
-		/-scrollView-/
+		/-scrollView
+		
+		if #available(iOS 15.0, *) {
+			scrollView.bottomAnchor == view.keyboardLayoutGuide.topAnchor
+		}
+		else {
+			scrollView.bottomAnchor == view.bottomAnchor
+			_ = keyboardObserver	//force lazy init
+		}
+		
 		view.addConstraint(stackView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor))
 	}
 	
@@ -30,6 +39,7 @@ open class ScrollingStackViewController : UIViewController {
 		view.addSubview(scrollableBackingView)
 		|-scrollableBackingView-|
 		/-scrollableBackingView-/
+		view.keyboardDismissMode = .interactive
 		return view
 	}
 	
@@ -58,4 +68,16 @@ open class ScrollingStackViewController : UIViewController {
 		return stack
 	}
 	
+	lazy var keyboardObserver:KeyboardFrameObserver = {
+		return KeyboardFrameObserver { [weak self] newFrame in
+			guard let sSelf = self else { return }
+			let keyboardFrameInViewCoordinates:CGRect = sSelf.view.convert(newFrame, from: nil)
+			let bottomInset:CGFloat = sSelf.view.bounds.size.height - keyboardFrameInViewCoordinates.origin.y
+			var insets:UIEdgeInsets = sSelf.scrollView.contentInset
+			insets.bottom = bottomInset
+			sSelf.scrollView.contentInset = insets
+		}
+	}()
+	
 }
+
