@@ -30,6 +30,80 @@ extension UILabel {
 
 
 open class SubscriberLabel : UILabel {
+	
+	///You have an @Published var :SomeStruct, and SomeStruct has some String? property you want to update
+	public init<ValuePublisher:Publisher>(binding:ValuePublisher, keyPath:KeyPath<ValuePublisher.Output, String?>, textColor:UIColor? = nil, font:UIFont? = nil, alignment:NSTextAlignment = .natural, hiding:Hiding? = nil) {
+		self.hiding = hiding
+		super.init(frame: .zero)
+		if let color = textColor {
+			self.textColor = color
+		}
+		if let ft = font {
+			self.font = ft
+		}
+		self.textAlignment = alignment
+		textObserving = binding.sink(receiveCompletion: { _ in
+			//this space intentionally left blank
+		}, receiveValue: { [weak self] newValue in
+			self?.processIncomingText(newValue[keyPath: keyPath])
+		})
+	}
+	
+	///You have an @Published var :SomeStruct, and SomeStruct has some String property you want to update
+	public init<ValuePublisher:Publisher>(binding:ValuePublisher, keyPath:KeyPath<ValuePublisher.Output, String>, textColor:UIColor? = nil, font:UIFont? = nil, alignment:NSTextAlignment = .natural, hiding:Hiding? = nil) {
+		self.hiding = hiding
+		super.init(frame: .zero)
+		if let color = textColor {
+			self.textColor = color
+		}
+		if let ft = font {
+			self.font = ft
+		}
+		self.textAlignment = alignment
+		textObserving = binding.sink(receiveCompletion: { _ in
+			//this space intentionally left blank
+		}, receiveValue: { [weak self] newValue in
+			self?.processIncomingText(newValue[keyPath: keyPath])
+		})
+	}
+	
+	///You have an @Published var :SomeStruct?, and SomeStruct has some String? property you want to update
+	public init<ValuePublisher:Publisher, ValueType>(binding:ValuePublisher, keyPath:KeyPath<ValueType, String?>, textColor:UIColor? = nil, font:UIFont? = nil, alignment:NSTextAlignment = .natural, hiding:Hiding? = nil) where ValuePublisher.Output == Optional<ValueType> {
+		self.hiding = hiding
+		super.init(frame: .zero)
+		if let color = textColor {
+			self.textColor = color
+		}
+		if let ft = font {
+			self.font = ft
+		}
+		self.textAlignment = alignment
+		textObserving = binding.sink(receiveCompletion: { completion in
+			//this space intentionally left blank
+		}, receiveValue: { [weak self] newValue in
+			self?.processIncomingText(newValue?[keyPath: keyPath])
+		})
+	}
+	
+	
+	///You have an @Published var :SomeStruct?, and SomeStruct has some String property you want to update
+	public init<ValuePublisher:Publisher, ValueType>(binding:ValuePublisher, keyPath:KeyPath<ValueType, String>, textColor:UIColor? = nil, font:UIFont? = nil, alignment:NSTextAlignment = .natural, hiding:Hiding? = nil) where ValuePublisher.Output == Optional<ValueType> {
+		self.hiding = hiding
+		super.init(frame: .zero)
+		if let color = textColor {
+			self.textColor = color
+		}
+		if let ft = font {
+			self.font = ft
+		}
+		self.textAlignment = alignment
+		textObserving = binding.sink(receiveCompletion: { completion in
+			//this space intentionally left blank
+		}, receiveValue: { [weak self] newValue in
+			self?.processIncomingText(newValue?[keyPath: keyPath])
+		})
+	}
+	
 
 	///For Publisher<String?, Error>
 	public init<TextPublisher:Publisher>(binding:TextPublisher, textColor:UIColor? = nil, font:UIFont? = nil, alignment:NSTextAlignment = .natural, hiding:Hiding? = nil) where TextPublisher.Output == String? {
