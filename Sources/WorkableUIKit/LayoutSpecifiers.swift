@@ -14,6 +14,8 @@ prefix operator /-
 prefix operator /-/-
 postfix operator -|
 postfix operator -/
+postfix operator ~|
+postfix operator ~/
 
 postfix operator -/-/
 
@@ -50,12 +52,20 @@ public postfix func -|(lhs:CGFloat)->PartialLayoutSpecifier {
 	return PartialLayoutSpecifier(axis: .horizontal, spacing: lhs, priority: UILayoutPriority.required)
 }
 
+public postfix func ~|(lhs:CGFloat)->PartialLayoutSpecifier {
+	return PartialLayoutSpecifier(axis: .horizontal, spacing: lhs, priority: UILayoutPriority.allButRequired)
+}
+
 public prefix func /-(rhs:CGFloat)->PartialLayoutSpecifier {
 	return PartialLayoutSpecifier(axis: .vertical, spacing: rhs, priority: UILayoutPriority.required)
 }
 
 public postfix func -/(lhs:CGFloat)->PartialLayoutSpecifier {
 	return PartialLayoutSpecifier(axis: .vertical, spacing: lhs, priority: UILayoutPriority.required)
+}
+
+public postfix func ~/(lhs:CGFloat)->PartialLayoutSpecifier {
+	return PartialLayoutSpecifier(axis: .vertical, spacing: lhs, priority: UILayoutPriority.allButRequired)
 }
 
 
@@ -77,6 +87,14 @@ public postfix func -/(lhs:CGFloat)->PartialLayoutSpecifier {
 
 @discardableResult public postfix func -|(lhs:UIView)->UIView {
 	let constraint = NSLayoutConstraint(item: lhs, attribute: .trailing, relatedBy:.equal, toItem: lhs.superview, attribute: .trailing, multiplier: 1.0, constant: 0.0)
+	lhs.translatesAutoresizingMaskIntoConstraints = false
+	lhs.superview?.addConstraint(constraint)
+	return lhs
+}
+
+@discardableResult public postfix func ~|(lhs:UIView)->UIView {
+	let constraint = NSLayoutConstraint(item: lhs, attribute: .trailing, relatedBy:.equal, toItem: lhs.superview, attribute: .trailing, multiplier: 1.0, constant: 0.0)
+	constraint.priority = .allButRequired
 	lhs.translatesAutoresizingMaskIntoConstraints = false
 	lhs.superview?.addConstraint(constraint)
 	return lhs
@@ -109,6 +127,13 @@ public postfix func -/(lhs:CGFloat)->PartialLayoutSpecifier {
 
 @discardableResult public postfix func -/(lhs:UIView)->UIView {
 	let constraint = NSLayoutConstraint(item: lhs, attribute: .bottom, relatedBy:.equal, toItem: lhs.superview, attribute: .bottom, multiplier: 1.0, constant: 0.0)
+	lhs.superview?.addConstraint(constraint)
+	return lhs
+}
+
+@discardableResult public postfix func ~/(lhs:UIView)->UIView {
+	let constraint = NSLayoutConstraint(item: lhs, attribute: .bottom, relatedBy:.equal, toItem: lhs.superview, attribute: .bottom, multiplier: 1.0, constant: 0.0)
+	constraint.priority = .allButRequired
 	lhs.superview?.addConstraint(constraint)
 	return lhs
 }
