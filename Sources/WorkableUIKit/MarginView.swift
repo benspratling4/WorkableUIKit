@@ -20,7 +20,7 @@ open class MarginView<Wrapped : UIView> : UIView {
 		topConstraint = wrapped.topAnchor == topAnchor + insets.top
 		
 		trailingConstraint = trailingAnchor == wrapped.trailingAnchor + insets.trailing
-		bottomConstraint = wrapped.bottomAnchor == bottomAnchor + insets.bottom
+		bottomConstraint = bottomAnchor == wrapped.bottomAnchor + insets.bottom
 	}
 	
 	///DO NOT CALL
