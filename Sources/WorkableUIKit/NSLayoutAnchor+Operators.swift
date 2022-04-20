@@ -134,6 +134,7 @@ extension NSLayoutDimension {
 	
 	@discardableResult public static func ==(lhs:NSLayoutDimension, rhs:AnchorDimensionFactor)->NSLayoutConstraint {
 		let constraint:NSLayoutConstraint = lhs.constraint(equalTo: rhs.anchor, multiplier: rhs.factor)
+		constraint.priority = rhs.priority
 		constraint.isActive = true
 		return constraint
 	}
@@ -146,6 +147,7 @@ extension NSLayoutDimension {
 	
 	@discardableResult public static func <=(lhs:NSLayoutDimension, rhs:AnchorDimensionFactor)->NSLayoutConstraint {
 		let constraint:NSLayoutConstraint = lhs.constraint(lessThanOrEqualTo: rhs.anchor, multiplier: rhs.factor)
+		constraint.priority = rhs.priority
 		constraint.isActive = true
 		return constraint
 	}
@@ -158,6 +160,7 @@ extension NSLayoutDimension {
 	
 	@discardableResult public static func >=(lhs:NSLayoutDimension, rhs:AnchorDimensionFactor)->NSLayoutConstraint {
 		let constraint:NSLayoutConstraint = lhs.constraint(greaterThanOrEqualTo: rhs.anchor, multiplier: rhs.factor)
+		constraint.priority = rhs.priority
 		constraint.isActive = true
 		return constraint
 	}
