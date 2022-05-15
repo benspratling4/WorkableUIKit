@@ -9,11 +9,11 @@
 import Foundation
 import UIKit
 
-internal let activityDocumentUrlKey:String = "docurl"
+public let activityDocumentUrlKey:String = "docurl"
 
 extension NSUserActivity {
 	
-	var documentUrl:URL? {
+	public var documentUrl:URL? {
 		get {
 			if let urlBookmarkData = userInfo?[activityDocumentUrlKey] as? Data {
 				var isStale:Bool = true
@@ -28,17 +28,21 @@ extension NSUserActivity {
 			return nil
 		}
 		set {
-			if userInfo == nil {
-				userInfo = [:]
-			}
+//			print("set documentUrl \(newValue)")
 			#if targetEnvironment(macCatalyst)
 			let bookmarkData:Data? = try? newValue?.bookmarkData(options: [ .withSecurityScope ], includingResourceValuesForKeys: nil, relativeTo: nil)
 			#else
 			let bookmarkData:Data? = try? newValue?.bookmarkData(options: [ .minimalBookmark ], includingResourceValuesForKeys: nil, relativeTo: nil)
 			#endif
+			
 			//you still put in nil if it is nil
-			userInfo?[UIDocument.userActivityURLKey] = newValue
-			userInfo?[activityDocumentUrlKey] = bookmarkData
+			if let docUrl = newValue {
+				addUserInfoEntries(from: [UIDocument.userActivityURLKey:docUrl])
+			}
+								   
+			if let data = bookmarkData {
+				addUserInfoEntries(from: [activityDocumentUrlKey:data])
+			}
 		}
 	}
 	

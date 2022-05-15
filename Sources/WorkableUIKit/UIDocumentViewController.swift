@@ -84,6 +84,7 @@ open class UIDocumentViewController<Document> : BannerViewController where Docum
 	
 	///the app will re-crete the NSUserActivity and inform the system of the change
 	open func updateSceneRestoration() {
+//		print("updateSceneRestoration()")
 		updateDocumentUrlInTitleBar()
 		updateStateRestorationWithCurrentDocumentActivity(documentUserActivity())
 	}
@@ -95,22 +96,37 @@ open class UIDocumentViewController<Document> : BannerViewController where Docum
 		activity.documentUrl = document.fileURL
 		activity.isEligibleForHandoff = true
 		activity.requiredUserInfoKeys = [activityDocumentUrlKey]
+//		print("documentUserActivity() -> \(activity), documentUrl = \(activity.documentUrl)")
 		return activity
 	}
 	
+	var cachedActivity:NSUserActivity?
+	
 	open func updateStateRestorationWithCurrentDocumentActivity(_ activity:NSUserActivity) {
 		defer {
+			cachedActivity = activity
+			self.userActivity = activity
 			view.window?.windowScene?.userActivity = activity
+//			print("view.window?.windowScene?.userActivity = \(activity), uuid = \(activity.persistentIdentifier)")
 		}
+//		print("updateStateRestorationWithCurrentDocumentActivity ...")
 		guard isViewLoaded
 			  ,let activationConditions = view.window?.windowScene?.activationConditions
-		else { return }
+		else {
+//			print("updateStateRestorationWithCurrentDocumentActivity view.window?.windowScene?.activationConditions == nil, isViewLoaded = \(isViewLoaded)")
+			return }
 		let url:URL = document.fileURL
 		let escapedFileUrl = url.absoluteString.replacingOccurrences(of: "'", with: "\\'")
 		activationConditions.canActivateForTargetContentIdentifierPredicate = NSPredicate(format: "self == '\(escapedFileUrl)'")
 		activationConditions.prefersToActivateForTargetContentIdentifierPredicate = NSPredicate(format: "self == '\(escapedFileUrl)'")
 		
 		view.window?.windowScene?.activationConditions = activationConditions
+	}
+	
+	open override func updateUserActivityState(_ activity: NSUserActivity) {
+		super.updateUserActivityState(activity)
+		activity.documentUrl = document.fileURL
+//		print("UIDocumentViewController updateUserActivityState \(activity), userInfo = \(activity.userInfo)")
 	}
 	
 }

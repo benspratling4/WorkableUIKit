@@ -41,9 +41,15 @@ open class GenericDocumentBrowserViewController<DocumentController, Document> : 
 		allowsPickingMultipleItems = false
 	}
 	
+	open override func updateUserActivityState(_ activity: NSUserActivity) {
+//		print("GenericDocumentBrowserViewController updateUserActivityState \(activity), userInfo = \(activity.userInfo)")
+		super.updateUserActivityState(activity)
+	}
+	
 	// MARK: Document Presentation
 	
 	open func presentDocument(at documentURL: URL, animated:Bool, restoringFrom:NSUserActivity?, completion:((Bool)->())?) {
+//		print("presentDocument(at \(self)")
 		let document = Document(fileURL: documentURL)
 		document.undoManager = view.window?.undoManager
 		let documentViewController = DocumentController(document:document
@@ -55,15 +61,31 @@ open class GenericDocumentBrowserViewController<DocumentController, Document> : 
 		documentViewController.modalPresentationStyle = .fullScreen
 //		print("document.open(...")
 		document.open(completionHandler: { (success) in
+//			print("document did open success = \(success)")
 			if success {
 				documentViewController.modalPresentationStyle = .fullScreen
 				documentViewController.modalTransitionStyle = .crossDissolve
-				self.present(documentViewController, animated: false, completion: {
-					documentViewController.restoreFrom(restoringFrom)
-					completion?(true)
-				})
+				let presentation = {
+					self.present(documentViewController, animated: false, completion: {
+	//					print("document open completed presentation")
+						documentViewController.restoreFrom(restoringFrom)
+						completion?(true)
+					})
+				}
+				//sometimes the window hasn't laoded yet because apple sucks.
+				if self.isViewLoaded
+					, let window = self.view.window {
+					presentation()
+				}
+				else {
+					DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+						presentation()
+					}
+				}
+				
 			}
 			else if let error = document.error as? LocalizedError {
+//				print("error opening document \(error)")
 				let bodyText =  [error.failureReason, error.recoverySuggestion]
 					.compactMap({ $0 })
 					.joined(separator: "  ")
@@ -87,6 +109,7 @@ open class GenericDocumentBrowserViewController<DocumentController, Document> : 
 				
 			}
 			else {
+//				print("unknown error opening document")
 				completion?(false)
 			}
 		})
@@ -94,7 +117,6 @@ open class GenericDocumentBrowserViewController<DocumentController, Document> : 
 	
 	
 	open func userDismissedDocument() {
-		//TODO: more to do here?
 		#if targetEnvironment(macCatalyst)
 		view.window?.windowScene?.titlebar?.representedURL = nil
 		#else
@@ -117,13 +139,20 @@ open class GenericDocumentBrowserViewController<DocumentController, Document> : 
 	}
 	
 	open func documentBrowser(_ controller: UIDocumentBrowserViewController, didPickDocumentsAt documentURLs: [URL]) {
+//		print("documentBrowser \(controller) didPickDocumentsAt")
 		guard let sourceURL = documentURLs.first else { return }
 		//check if an open scene should be focused instead
 		let escapedFileUrl = sourceURL.absoluteString.replacingOccurrences(of: "'", with: "\\'")
 		if let existingSession = UIApplication.shared
 			.openSessions
-			.filter({ ($0.scene as? UIWindowScene)?.activationConditions.prefersToActivateForTargetContentIdentifierPredicate.evaluate(with: escapedFileUrl) ?? false })
+			.filter({ session in
+				guard let windowScene = session.scene as? UIWindowScene else { return false }
+				let predicate:NSPredicate = windowScene.activationConditions.prefersToActivateForTargetContentIdentifierPredicate
+				let prefers:Bool = predicate.evaluate(with: escapedFileUrl)
+				return prefers
+			})
 			.first {
+//			print("requestSceneSessionActivation( \(existingSession)")
 			UIApplication.shared.requestSceneSessionActivation(existingSession, userActivity: nil, options: nil, errorHandler: nil)
 			return
 		}
