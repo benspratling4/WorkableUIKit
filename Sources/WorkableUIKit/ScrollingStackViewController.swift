@@ -17,7 +17,7 @@ open class ScrollingStackViewController : UIViewController {
 		super.viewDidLoad()
 		view.addSubview(scrollView)
 		|-scrollView-|
-		/-scrollView
+		∫-scrollView
 		
 		if #available(iOS 15.0, *) {
 			scrollView.bottomAnchor == view.keyboardLayoutGuide.topAnchor
@@ -38,7 +38,7 @@ open class ScrollingStackViewController : UIViewController {
 		view.translatesAutoresizingMaskIntoConstraints = false
 		view.addSubview(scrollableBackingView)
 		|-scrollableBackingView-|
-		/-scrollableBackingView-/
+		∫-scrollableBackingView-∫
 		view.keyboardDismissMode = .interactive
 		return view
 	}
@@ -51,7 +51,7 @@ open class ScrollingStackViewController : UIViewController {
 		aView.translatesAutoresizingMaskIntoConstraints = false
 		aView.addSubview(stackView)
 		|-|-stackView-|-|
-		/-/-stackView-/-/
+		∫-∫-stackView-∫-∫
 		return aView
 	}
 	

@@ -65,7 +65,7 @@ open class ZStack : UIView {
 		switch alignment.vertical {
 			
 		case .leading: //aka top
-			/-view
+			∫-view
 			bottomAnchor >= view.bottomAnchor + 0.0 | .allButRequired
 			
 		case .center:
@@ -74,11 +74,11 @@ open class ZStack : UIView {
 			bottomAnchor >= view.bottomAnchor + 0.0 | .allButRequired
 			
 		case .trailing:
-			view-/
+			view-∫
 			view.topAnchor >= topAnchor + 0.0 | .allButRequired
 			
 		case .fill:
-			/-view~/
+			∫-view~∫
 		}
 	}
 	

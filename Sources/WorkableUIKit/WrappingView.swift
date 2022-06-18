@@ -43,7 +43,7 @@ open class WrappingView<ViewType:UIView> : UIView {
 	
 	open func setUpContentLayoutConstraints(wrapped:ViewType) {
 		|-wrapped-|
-		/-wrapped-/
+		∫-wrapped-∫
 	}
 	
 }
