@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "CoreGraphicsExtensions",
+        "repositoryURL": "https://github.com/benspratling4/CoreGraphicsExtensions.git",
+        "state": {
+          "branch": null,
+          "revision": "fe201c0484296c46660b41a6f236fc747ea00eb5",
+          "version": "0.2.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
