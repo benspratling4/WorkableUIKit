@@ -24,30 +24,35 @@ public class LineWrappingStackView : UIView {
 	
 	public var insets:NSDirectionalEdgeInsets = NSDirectionalEdgeInsets(top: 10.0, leading: 10.0, bottom: 10.0, trailing: 10.0) {
 		didSet {
+			childNeedsLayout = true
 			needsReLayoutCatchAll()
 		}
 	}
 	
 	public var spacing: CGFloat = 10.0 {
 		didSet {
+			childNeedsLayout = true
 			needsReLayoutCatchAll()
 		}
 	}
 	
 	public var lineSpacing: CGFloat = 10.0 {
 		didSet {
+			childNeedsLayout = true
 			needsReLayoutCatchAll()
 		}
 	}
 	
 	public var horizontalAlignment:UIStackView.Alignment = .leading {
 		didSet {
+			childNeedsLayout = true
 			needsReLayoutCatchAll()
 		}
 	}
 	
 	public var verticalAlignment:UIStackView.Alignment = .bottom {
 		didSet {
+			childNeedsLayout = true
 			needsReLayoutCatchAll()
 		}
 	}
@@ -57,6 +62,7 @@ public class LineWrappingStackView : UIView {
 	}
 	
 	public func insertArrangedSubview(_ view: UIView, at stackIndex: Int){
+		childNeedsLayout = true
 		viewOwners.insert(newViewOwner(view: view), at: stackIndex)
 		needsReLayoutCatchAll()
 	}
@@ -264,6 +270,7 @@ public class LineWrappingStackView : UIView {
 	public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
 		super.traitCollectionDidChange(previousTraitCollection)
 		if previousTraitCollection?.layoutDirection != traitCollection.layoutDirection {
+			childNeedsLayout = true
 			needsReLayoutCatchAll()
 		}
 	}
@@ -272,6 +279,7 @@ public class LineWrappingStackView : UIView {
 		super.willRemoveSubview(subview)
 		if let index = viewOwners.firstIndex(where: { $0.view === subview }) {
 			viewOwners.remove(at: index)
+			childNeedsLayout = true
 			needsReLayoutCatchAll()
 		}
 	}
