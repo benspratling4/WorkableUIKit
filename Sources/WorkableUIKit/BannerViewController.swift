@@ -137,7 +137,7 @@ open class BannerView : UIView {
 		isUserInteractionEnabled = true
 		addSubview(innerBanner)
 		|-margin-innerBanner-margin-|
-		/-margin/innerBanner/margin-/
+		∫-margin∫innerBanner∫margin-∫
 	}
 	
 	
@@ -155,7 +155,7 @@ open class BannerView : UIView {
 		
 		aView.addSubview(label)
 		|-margin-label-margin-|
-		/-margin/label/margin-/
+		∫-margin∫label∫margin-∫
 		
 		return aView
 	}

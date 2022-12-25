@@ -11,20 +11,32 @@ import UIKit
 
 prefix operator |-
 prefix operator /-
+prefix operator ∫-
 prefix operator /-/-
+prefix operator ∫-∫-
 postfix operator -|
 postfix operator -/
+postfix operator -∫
+postfix operator ~|
+postfix operator ~/
+postfix operator ~∫
+
+///can be typed on a mac with Option+B
+infix operator ∫ : MultiplicationPrecedence
 
 postfix operator -/-/
+postfix operator -∫-∫
 
 ///center horizontally
 infix operator -|-
 
 ///center vertically
 infix operator -/-
+infix operator -∫-
 
 ///same height
 infix operator /-/
+infix operator ∫-∫
 
 /// same width
 infix operator |-|
@@ -50,12 +62,35 @@ public postfix func -|(lhs:CGFloat)->PartialLayoutSpecifier {
 	return PartialLayoutSpecifier(axis: .horizontal, spacing: lhs, priority: UILayoutPriority.required)
 }
 
+public postfix func ~|(lhs:CGFloat)->PartialLayoutSpecifier {
+	return PartialLayoutSpecifier(axis: .horizontal, spacing: lhs, priority: UILayoutPriority.allButRequired)
+}
+
+@available(*, deprecated, message:"For compatibility with Swift 5.7, use ∫ operators instead")
 public prefix func /-(rhs:CGFloat)->PartialLayoutSpecifier {
 	return PartialLayoutSpecifier(axis: .vertical, spacing: rhs, priority: UILayoutPriority.required)
 }
 
+public prefix func ∫-(rhs:CGFloat)->PartialLayoutSpecifier {
+	return PartialLayoutSpecifier(axis: .vertical, spacing: rhs, priority: UILayoutPriority.required)
+}
+
+@available(*, deprecated, message:"For compatibility with Swift 5.7, use ∫ operators instead")
 public postfix func -/(lhs:CGFloat)->PartialLayoutSpecifier {
 	return PartialLayoutSpecifier(axis: .vertical, spacing: lhs, priority: UILayoutPriority.required)
+}
+
+public postfix func -∫(lhs:CGFloat)->PartialLayoutSpecifier {
+	return PartialLayoutSpecifier(axis: .vertical, spacing: lhs, priority: UILayoutPriority.required)
+}
+
+@available(*, deprecated, message:"For compatibility with Swift 5.7, use ∫ operators instead")
+public postfix func ~/(lhs:CGFloat)->PartialLayoutSpecifier {
+	return PartialLayoutSpecifier(axis: .vertical, spacing: lhs, priority: UILayoutPriority.allButRequired)
+}
+
+public postfix func ~∫(lhs:CGFloat)->PartialLayoutSpecifier {
+	return PartialLayoutSpecifier(axis: .vertical, spacing: lhs, priority: UILayoutPriority.allButRequired)
 }
 
 
@@ -82,6 +117,14 @@ public postfix func -/(lhs:CGFloat)->PartialLayoutSpecifier {
 	return lhs
 }
 
+@discardableResult public postfix func ~|(lhs:UIView)->UIView {
+	let constraint = NSLayoutConstraint(item: lhs, attribute: .trailing, relatedBy:.equal, toItem: lhs.superview, attribute: .trailing, multiplier: 1.0, constant: 0.0)
+	constraint.priority = .allButRequired
+	lhs.translatesAutoresizingMaskIntoConstraints = false
+	lhs.superview?.addConstraint(constraint)
+	return lhs
+}
+
 @discardableResult public postfix func -|-|(lhs:UIView)->UIView {
 	guard let superView = lhs.superview else { return lhs }
 	let constraint = superView.safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: lhs.trailingAnchor)
@@ -91,6 +134,7 @@ public postfix func -/(lhs:CGFloat)->PartialLayoutSpecifier {
 }
 
 
+@available(*, deprecated, message:"For compatibility with Swift 5.7, use ∫ operators instead")
 @discardableResult public prefix func /-(rhs:UIView)->UIView {
 	let constraint = NSLayoutConstraint(item: rhs, attribute: .top, relatedBy:.equal, toItem: rhs.superview, attribute: .top, multiplier: 1.0, constant: 0.0)
 	rhs.translatesAutoresizingMaskIntoConstraints = false
@@ -98,7 +142,15 @@ public postfix func -/(lhs:CGFloat)->PartialLayoutSpecifier {
 	return rhs
 }
 
+@discardableResult public prefix func ∫-(rhs:UIView)->UIView {
+	let constraint = NSLayoutConstraint(item: rhs, attribute: .top, relatedBy:.equal, toItem: rhs.superview, attribute: .top, multiplier: 1.0, constant: 0.0)
+	rhs.translatesAutoresizingMaskIntoConstraints = false
+	rhs.superview?.addConstraint(constraint)
+	return rhs
+}
 
+
+@available(*, deprecated, message:"For compatibility with Swift 5.7, use ∫ operators instead")
 @discardableResult public prefix func /-/-(rhs:UIView)->UIView {
 	guard let superView = rhs.superview else { return rhs }
 	let constraint = superView.safeAreaLayoutGuide.topAnchor.constraint(equalTo: rhs.topAnchor)
@@ -107,14 +159,52 @@ public postfix func -/(lhs:CGFloat)->PartialLayoutSpecifier {
 	return rhs
 }
 
+@discardableResult public prefix func ∫-∫-(rhs:UIView)->UIView {
+	guard let superView = rhs.superview else { return rhs }
+	let constraint = superView.safeAreaLayoutGuide.topAnchor.constraint(equalTo: rhs.topAnchor)
+	rhs.translatesAutoresizingMaskIntoConstraints = false
+	rhs.superview?.addConstraint(constraint)
+	return rhs
+}
+
+@available(*, deprecated, message:"For compatibility with Swift 5.7, use ∫ operators instead")
 @discardableResult public postfix func -/(lhs:UIView)->UIView {
 	let constraint = NSLayoutConstraint(item: lhs, attribute: .bottom, relatedBy:.equal, toItem: lhs.superview, attribute: .bottom, multiplier: 1.0, constant: 0.0)
 	lhs.superview?.addConstraint(constraint)
 	return lhs
 }
 
+@discardableResult public postfix func -∫(lhs:UIView)->UIView {
+	let constraint = NSLayoutConstraint(item: lhs, attribute: .bottom, relatedBy:.equal, toItem: lhs.superview, attribute: .bottom, multiplier: 1.0, constant: 0.0)
+	lhs.superview?.addConstraint(constraint)
+	return lhs
+}
 
+@available(*, deprecated, message:"For compatibility with Swift 5.7, use ∫ operators instead")
+@discardableResult public postfix func ~/(lhs:UIView)->UIView {
+	let constraint = NSLayoutConstraint(item: lhs, attribute: .bottom, relatedBy:.equal, toItem: lhs.superview, attribute: .bottom, multiplier: 1.0, constant: 0.0)
+	constraint.priority = .allButRequired
+	lhs.superview?.addConstraint(constraint)
+	return lhs
+}
+
+@discardableResult public postfix func ~∫(lhs:UIView)->UIView {
+	let constraint = NSLayoutConstraint(item: lhs, attribute: .bottom, relatedBy:.equal, toItem: lhs.superview, attribute: .bottom, multiplier: 1.0, constant: 0.0)
+	constraint.priority = .allButRequired
+	lhs.superview?.addConstraint(constraint)
+	return lhs
+}
+
+
+@available(*, deprecated, message:"For compatibility with Swift 5.7, use ∫ operators instead")
 @discardableResult public postfix func -/-/(lhs:UIView)->UIView {
+	guard let superView = lhs.superview else { return lhs }
+	let constraint = superView.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: lhs.bottomAnchor)
+	lhs.superview?.addConstraint(constraint)
+	return lhs
+}
+
+@discardableResult public postfix func -∫-∫(lhs:UIView)->UIView {
 	guard let superView = lhs.superview else { return lhs }
 	let constraint = superView.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: lhs.bottomAnchor)
 	lhs.superview?.addConstraint(constraint)
@@ -150,6 +240,7 @@ public postfix func -/(lhs:CGFloat)->PartialLayoutSpecifier {
 	return lhs
 }
 
+@available(*, deprecated, message:"For compatibility with Swift 5.7, use ∫ operators instead")
 @discardableResult public func /(lhs:UIView, rhs:PartialLayoutSpecifier)->UIView {
 	let trailAttribute:NSLayoutConstraint.Attribute = (rhs.axis == .horizontal) ? .trailing : .bottom
 	let constraint = NSLayoutConstraint(item: lhs, attribute:trailAttribute, relatedBy: .equal, toItem: lhs.superview, attribute: trailAttribute, multiplier: 1.0, constant: -rhs.spacing)
@@ -159,6 +250,16 @@ public postfix func -/(lhs:CGFloat)->PartialLayoutSpecifier {
 	return lhs
 }
 
+@discardableResult public func ∫(lhs:UIView, rhs:PartialLayoutSpecifier)->UIView {
+	let trailAttribute:NSLayoutConstraint.Attribute = (rhs.axis == .horizontal) ? .trailing : .bottom
+	let constraint = NSLayoutConstraint(item: lhs, attribute:trailAttribute, relatedBy: .equal, toItem: lhs.superview, attribute: trailAttribute, multiplier: 1.0, constant: -rhs.spacing)
+	constraint.priority = rhs.priority
+	lhs.translatesAutoresizingMaskIntoConstraints = false
+	lhs.superview?.addConstraint(constraint)
+	return lhs
+}
+
+@available(*, deprecated, message:"For compatibility with Swift 5.7, use ∫ operators instead")
 @discardableResult public func /(lhs:UIView, rhs:UIView)->UIView {
 	let constraint = NSLayoutConstraint(item: lhs, attribute: .bottom, relatedBy: .equal, toItem: rhs, attribute: .top, multiplier: 1.0, constant: 0.0)
 	lhs.translatesAutoresizingMaskIntoConstraints = false
@@ -169,7 +270,27 @@ public postfix func -/(lhs:CGFloat)->PartialLayoutSpecifier {
 	return rhs
 }
 
+@discardableResult public func ∫(lhs:UIView, rhs:UIView)->UIView {
+	let constraint = NSLayoutConstraint(item: lhs, attribute: .bottom, relatedBy: .equal, toItem: rhs, attribute: .top, multiplier: 1.0, constant: 0.0)
+	lhs.translatesAutoresizingMaskIntoConstraints = false
+	rhs.translatesAutoresizingMaskIntoConstraints = false
+	if let ancestor = lhs.shallowestCommonAncestor(with: rhs) {
+		ancestor.addConstraint(constraint)
+	}
+	return rhs
+}
+
+@available(*, deprecated, message:"For compatibility with Swift 5.7, use ∫ operators instead")
 @discardableResult public func /(lhs:PartialLayoutSpecifier, rhs:UIView)->UIView {
+	let leadAttribute:NSLayoutConstraint.Attribute = (lhs.axis == .horizontal) ? .leading : .top
+	let constraint = NSLayoutConstraint(item: rhs, attribute:leadAttribute, relatedBy: .equal, toItem: rhs.superview, attribute: leadAttribute, multiplier: 1.0, constant: lhs.spacing)
+	constraint.priority = lhs.priority
+	rhs.translatesAutoresizingMaskIntoConstraints = false
+	rhs.superview?.addConstraint(constraint)
+	return rhs
+}
+
+@discardableResult public func ∫(lhs:PartialLayoutSpecifier, rhs:UIView)->UIView {
 	let leadAttribute:NSLayoutConstraint.Attribute = (lhs.axis == .horizontal) ? .leading : .top
 	let constraint = NSLayoutConstraint(item: rhs, attribute:leadAttribute, relatedBy: .equal, toItem: rhs.superview, attribute: leadAttribute, multiplier: 1.0, constant: lhs.spacing)
 	constraint.priority = lhs.priority
@@ -182,7 +303,12 @@ public func -(lhs:UIView, rhs:CGFloat)->LayoutSpecifier {
 	return LayoutSpecifier(axis: .horizontal, spacing: rhs, priority: UILayoutPriority.required, view:lhs)
 }
 
+@available(*, deprecated, message:"For compatibility with Swift 5.7, use ∫ operators instead")
 public func /(lhs:UIView, rhs:CGFloat)->LayoutSpecifier {
+	return LayoutSpecifier(axis: .vertical, spacing: rhs, priority: UILayoutPriority.required, view:lhs)
+}
+
+public func ∫(lhs:UIView, rhs:CGFloat)->LayoutSpecifier {
 	return LayoutSpecifier(axis: .vertical, spacing: rhs, priority: UILayoutPriority.required, view:lhs)
 }
 
@@ -197,7 +323,19 @@ public func /(lhs:UIView, rhs:CGFloat)->LayoutSpecifier {
 	return rhs
 }
 
+@available(*, deprecated, message:"For compatibility with Swift 5.7, use ∫ operators instead")
 @discardableResult public func /(lhs:LayoutSpecifier, rhs:UIView)->UIView {
+	let constraint = NSLayoutConstraint(item: rhs, attribute:.top, relatedBy: .equal, toItem: lhs.view, attribute: .bottom, multiplier: 1.0, constant: lhs.spacing)
+	constraint.priority = lhs.priority
+	rhs.translatesAutoresizingMaskIntoConstraints = false
+	lhs.view.translatesAutoresizingMaskIntoConstraints = false
+	if let ancestor = lhs.view.shallowestCommonAncestor(with: rhs) {
+		ancestor.addConstraint(constraint)
+	}
+	return rhs
+}
+
+@discardableResult public func ∫(lhs:LayoutSpecifier, rhs:UIView)->UIView {
 	let constraint = NSLayoutConstraint(item: rhs, attribute:.top, relatedBy: .equal, toItem: lhs.view, attribute: .bottom, multiplier: 1.0, constant: lhs.spacing)
 	constraint.priority = lhs.priority
 	rhs.translatesAutoresizingMaskIntoConstraints = false
@@ -217,7 +355,16 @@ public func /(lhs:UIView, rhs:CGFloat)->LayoutSpecifier {
 }
 
 /// Align centers vertically
+@available(*, deprecated, message:"For compatibility with Swift 5.7, use ∫ operators instead")
 @discardableResult public func -/-(lhs:UIView, rhs:UIView)->UIView {
+	rhs.translatesAutoresizingMaskIntoConstraints = false
+	lhs.translatesAutoresizingMaskIntoConstraints = false
+	lhs.centerYFeature == rhs.centerYFeature
+	return rhs
+}
+
+/// Align centers vertically
+@discardableResult public func -∫-(lhs:UIView, rhs:UIView)->UIView {
 	rhs.translatesAutoresizingMaskIntoConstraints = false
 	lhs.translatesAutoresizingMaskIntoConstraints = false
 	lhs.centerYFeature == rhs.centerYFeature
@@ -233,7 +380,16 @@ public func /(lhs:UIView, rhs:CGFloat)->LayoutSpecifier {
 }
 
 ///Set heights equal
+@available(*, deprecated, message:"For compatibility with Swift 5.7, use ∫ operators instead")
 @discardableResult public func /-/(lhs:UIView, rhs:UIView)->UIView {
+	rhs.translatesAutoresizingMaskIntoConstraints = false
+	lhs.translatesAutoresizingMaskIntoConstraints = false
+	lhs.heightFeature == rhs.heightFeature
+	return rhs
+}
+
+///Set heights equal
+@discardableResult public func ∫-∫(lhs:UIView, rhs:UIView)->UIView {
 	rhs.translatesAutoresizingMaskIntoConstraints = false
 	lhs.translatesAutoresizingMaskIntoConstraints = false
 	lhs.heightFeature == rhs.heightFeature

@@ -35,7 +35,9 @@ open class GenericDocumentSceneDelegate<DocumentController, Document> : UIRespon
 	
 	
 	open func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
-		return scene.userActivity
+		let activity = existingDocumentViewController()?.userActivity
+//		print("stateRestorationActivity(for scene, activity = \(activity), doc url = \(activity?.documentUrl)")
+		return activity
 	}
 	
 	open func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
@@ -45,7 +47,8 @@ open class GenericDocumentSceneDelegate<DocumentController, Document> : UIRespon
 		else {
 //			print("either no url context or rootview controller was not ")
 			return }
-		scene.session.userInfo = ["importIfNeeded":!urlContext.options.openInPlace]
+		let importIfNeeded = !urlContext.options.openInPlace
+		scene.session.userInfo = ["importIfNeeded":importIfNeeded]
 		docUrlNeedsStopAccessingSecurityScope = urlContext.url.startAccessingSecurityScopedResource()
 		docBrowser.revealDocument(at: urlContext.url, importIfNeeded: !urlContext.options.openInPlace) { (revealedDocumentURL, error) in
 			if let error = error {
@@ -61,6 +64,8 @@ open class GenericDocumentSceneDelegate<DocumentController, Document> : UIRespon
 	private var docUrlNeedsStopAccessingSecurityScope:Bool = false
 	
 	open func sceneDidBecomeActive(_ scene: UIScene) {
+//		print("sceneDidBecomeActive \(scene)")
+//		print("is window key \(window?.isKeyWindow == true)")
 		if let docViewController = existingDocumentViewController() {
 			if docViewController.document.documentState.contains(.closed) {
 				docViewController.document.open { (success) in
@@ -88,12 +93,15 @@ open class GenericDocumentSceneDelegate<DocumentController, Document> : UIRespon
 	//MARK: -  Utilities
 	
 	open func configure(window: UIWindow?, with activity: NSUserActivity, session:UISceneSession) -> Bool {
-		guard let url = activity.documentUrl else {
+//		print("configure window")
+		guard let url = activity.documentUrl ?? activity.targetContentUrl else {
+//			print("documentUrl was nil, userInfo == \(activity.userInfo)")
 			return false
 		}
 		
 		guard let docBrowser = window?.rootViewController as? GenericDocumentBrowserViewController<DocumentController, Document>
 		else {
+//			print("window's rootview controller was not a geneic doc browsing window")
 			return false
 		}
 		docUrlNeedsStopAccessingSecurityScope = url.startAccessingSecurityScopedResource()
@@ -123,7 +131,7 @@ open class GenericDocumentSceneDelegate<DocumentController, Document> : UIRespon
 	
 	open func closeDocIfPossible() {
 		if let showDocVC = window?.rootViewController?.presentedViewController as? DocumentController {
-//			print(showDocVC.document.documentState.contains(.closed))
+//			print("closeDocIfPossible closed == \(showDocVC.document.documentState.contains(.closed))")
 			showDocVC.document.close { (didClose) in
 				if self.docUrlNeedsStopAccessingSecurityScope {
 					showDocVC.document.fileURL.stopAccessingSecurityScopedResource()
@@ -132,4 +140,13 @@ open class GenericDocumentSceneDelegate<DocumentController, Document> : UIRespon
 		}
 	}
 	
+}
+
+
+
+extension NSUserActivity {
+	var targetContentUrl:URL? {
+		guard let string = targetContentIdentifier else { return nil}
+		return URL(string: string)
+	}
 }

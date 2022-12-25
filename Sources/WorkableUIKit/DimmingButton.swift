@@ -19,14 +19,22 @@ open class DimmingButton : UIView {
 		commonInit()
 	}
 	
+	public convenience init(action:(()->())? = nil, content:UIView) {
+		self.init(action: action)
+		addSubview(content)
+		|-content-|
+		∫-content-∫
+	}
+	
 	public required init?(coder: NSCoder) {
 		super.init(coder: coder)
 		commonInit()
 	}
 	
 	open func commonInit() {
+		accessibilityTraits = .button
 		insertSubview(overView, at: 0)
-		/-overView-/
+		∫-overView-∫
 		|-overView-|
 		isUserInteractionEnabled = true
 		addGestureRecognizer(tapRecognizer)
