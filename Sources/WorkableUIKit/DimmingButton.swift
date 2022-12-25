@@ -89,4 +89,49 @@ open class DimmingButton : UIView {
 	}
 	
 	
+	open override var forFirstBaselineLayout: UIView {
+		let labels = allSubviews(ofType: UILabel.self)
+		let textFields = allSubviews(ofType: UITextField.self)
+		let textViews = allSubviews(ofType: UITextView.self)
+		//TODO: all subviews for which forFirstBaselineLayout does not return self
+		
+		var allTextableViews:[UIView] = labels + textFields + textViews
+		let sortedTextableViews = allTextableViews.sorted(by: { $0.frame.origin.y < $1.frame.origin.y })
+		if let textView = sortedTextableViews.first {
+			return textView
+		}
+		if #available(iOS 13.0, tvOS 13.0, macCatalyst 13.0, *) {
+			let imageViews = allSubviews(ofType: UIImageView.self)
+				.filter({ $0.image?.baselineOffsetFromBottom != nil })
+				.sorted(by: { $0.frame.origin.y < $1.frame.origin.y })
+			if let firstImageView = imageViews.first {
+				return firstImageView
+			}
+		}
+		return super.forFirstBaselineLayout
+	}
+	
+	
+	open override var forLastBaselineLayout: UIView {
+		let labels = allSubviews(ofType: UILabel.self)
+		let textFields = allSubviews(ofType: UITextField.self)
+		let textViews = allSubviews(ofType: UITextView.self)
+		//TODO: all subviews for which forFirstBaselineLayout does not return self
+		
+		var allTextableViews:[UIView] = labels + textFields + textViews
+		let sortedTextableViews = allTextableViews.sorted(by: { $0.frame.origin.y < $1.frame.origin.y })
+		if let textView = sortedTextableViews.last {
+			return textView
+		}
+		if #available(iOS 13.0, tvOS 13.0, macCatalyst 13.0, *) {
+			let imageViews = allSubviews(ofType: UIImageView.self)
+				.filter({ $0.image?.baselineOffsetFromBottom != nil })
+				.sorted(by: { $0.frame.origin.y < $1.frame.origin.y })
+			if let firstImageView = imageViews.last {
+				return firstImageView
+			}
+		}
+		return super.forLastBaselineLayout
+	}
+	
 }
