@@ -63,6 +63,17 @@ public class LineWrappingStackView : UIView {
 	
 	public func insertArrangedSubview(_ view: UIView, at stackIndex: Int){
 		childNeedsLayout = true
+		if stackIndex == 0 {
+			if viewOwners.count == 0 {
+				addSubview(view)
+			}
+			else {
+				insertSubview(view, belowSubview:viewOwners[stackIndex+1].view)
+			}
+		}
+		else {
+			insertSubview(view, aboveSubview:viewOwners[stackIndex-1].view)
+		}
 		viewOwners.insert(newViewOwner(view: view), at: stackIndex)
 		needsReLayoutCatchAll()
 	}
