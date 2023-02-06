@@ -62,20 +62,22 @@ public class LineWrappingStackView : UIView {
 	}
 	
 	public func insertArrangedSubview(_ view: UIView, at stackIndex: Int){
-		childNeedsLayout = true
+		currentLayout = nil
+		view.translatesAutoresizingMaskIntoConstraints = false
+		view.sizeToFit()
 		if stackIndex == 0 {
 			if viewOwners.count == 0 {
 				addSubview(view)
 			}
 			else {
-				insertSubview(view, belowSubview:viewOwners[stackIndex+1].view)
+				insertSubview(view, belowSubview:viewOwners[stackIndex].view)
 			}
 		}
 		else {
 			insertSubview(view, aboveSubview:viewOwners[stackIndex-1].view)
 		}
 		viewOwners.insert(newViewOwner(view: view), at: stackIndex)
-		needsReLayoutCatchAll()
+		setNeedsLayout()
 	}
 	
 	
@@ -288,6 +290,7 @@ public class LineWrappingStackView : UIView {
 	
 	public override func willRemoveSubview(_ subview: UIView) {
 		super.willRemoveSubview(subview)
+		currentLayout = nil
 		if let index = viewOwners.firstIndex(where: { $0.view === subview }) {
 			viewOwners.remove(at: index)
 			childNeedsLayout = true
